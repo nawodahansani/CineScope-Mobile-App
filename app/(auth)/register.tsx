@@ -98,13 +98,7 @@ const Register = () => {
           <View className="flex-row justify-center mb-8">
             <TouchableOpacity className="bg-[#0F3460] rounded-full p-3 mx-2">
               <Text className="text-white font-bold">G</Text>
-            </TouchableOpacity>
-            <TouchableOpacity className="bg-[#0F3460] rounded-full p-3 mx-2">
-              <Text className="text-white font-bold">f</Text>
-            </TouchableOpacity>
-            <TouchableOpacity className="bg-[#0F3460] rounded-full p-3 mx-2">
-              <Text className="text-white font-bold">in</Text>
-            </TouchableOpacity>
+            </TouchableOpacity>        
           </View>
         </View>
 
