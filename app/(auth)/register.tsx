@@ -27,17 +27,6 @@ const Register = () => {
 
         {/* Form */}
         <View className="mb-8">
-          {/* Name */}
-          <View className="mb-4">
-            <View className="flex-row items-center bg-[#0F3460] rounded-xl px-4 py-3 mb-2">
-              <User color="#D1D1D1" size={20} />
-              <TextInput
-                className="flex-1 text-white ml-3"
-                placeholder="Full Name"
-                placeholderTextColor="#D1D1D1"
-              />
-            </View>
-          </View>
 
           {/* Email */}
           <View className="mb-4">
