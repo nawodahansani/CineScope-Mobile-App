@@ -3,7 +3,7 @@ import { View, Text, TextInput, TouchableOpacity, ScrollView, Pressable } from '
 import { Eye, EyeOff, Mail, Lock } from 'lucide-react-native';
 import { router, useRouter } from 'expo-router';
 
-export default function LoginScreen() {
+const Login = () => {
     const router = useRouter();
     const [showPassword, setShowPassword] = useState(false);
 
@@ -106,3 +106,5 @@ export default function LoginScreen() {
     </ScrollView>
   );
 }
+
+export default Login;
