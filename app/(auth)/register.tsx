@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, ScrollView, Pressable } from 'react-native';
 import { Eye, EyeOff, Mail, Lock, User } from 'lucide-react-native';
-import { useRouter } from '@/.expo/types/router';
+import { useRouter } from 'expo-router';
 
 const Register = () => {
   const router = useRouter();
