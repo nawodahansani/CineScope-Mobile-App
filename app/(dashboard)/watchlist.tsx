@@ -1,13 +1,13 @@
 import { View, Text } from 'react-native'
 import React from 'react'
 
-const notification = () => {
+const watchlist = () => {
   return (
     <View>
-      <Text>Notification</Text>
+      <Text>Watchlist</Text>
     </View>
   )
 }
 
-export default notification 
+export default watchlist
 
