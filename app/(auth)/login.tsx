@@ -1,11 +1,39 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, ScrollView, Pressable } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, ScrollView, Pressable, Alert, ActivityIndicator } from 'react-native';
 import { Eye, EyeOff, Mail, Lock } from 'lucide-react-native';
-import { router, useRouter } from 'expo-router';
+import { useRouter } from 'expo-router';
+import { login } from '@/services/authservice';
 
 const Login = () => {
     const router = useRouter();
+
     const [showPassword, setShowPassword] = useState(false);
+    const [email, setEmail] = useState<string>('');
+    const [password, setPassword] = useState<string>('');
+    const [loading, setLoading] = useState<boolean>(false);
+
+    const handleLogin = async () => {
+      if (!email || !password) {
+        return Alert.alert('Please fill in all fields');
+      }
+
+      try{
+        setLoading(true);
+        await login(email, password);
+        Alert.alert('Login Successful');
+        router.push('/home');
+      } catch (error) {
+        console.log(error);
+        Alert.alert('Login Failed. Please try again!');
+      } finally {
+        setLoading(false);
+      }
+    }
+
+     const handleForgotPassword = () => {
+    Alert.alert('Forgot Password pressed', 'Add reset logic here.');
+    // In real app → router.push('/forgot-password') or API call
+  };
 
   return (
     <ScrollView 
@@ -38,6 +66,8 @@ const Login = () => {
                 placeholderTextColor="#D1D1D1"
                 keyboardType="email-address"
                 autoCapitalize="none"
+                value={email}
+                onChangeText={setEmail}
               />
             </View>
           </View>
@@ -51,6 +81,8 @@ const Login = () => {
                 placeholder="Password"
                 placeholderTextColor="#D1D1D1"
                 secureTextEntry={!showPassword}
+                value={password}
+                onChangeText={setPassword}
               />
               <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
                 {showPassword ? (
@@ -64,14 +96,23 @@ const Login = () => {
 
           {/* Forgot Password */}
           <View className="items-end mb-6">
-            <TouchableOpacity>
+            <TouchableOpacity
+              onPress={handleForgotPassword}>
               <Text className="text-[#E94560] font-medium">Forgot Password?</Text>
             </TouchableOpacity>
           </View>
 
           {/* Login Button */}
-          <TouchableOpacity className="bg-[#E94560] rounded-xl py-4 mb-6 items-center">
-            <Text className="text-white text-lg font-bold">Sign In</Text>
+          <TouchableOpacity 
+          className="bg-[#E94560] rounded-xl py-4 mb-6 items-center"
+          onPress={handleLogin}
+          disabled={loading}
+          >
+            {loading ? (
+              <ActivityIndicator color="#fff" />
+            ) : (
+              <Text className="text-white text-lg font-bold">Sign In</Text>
+            )}
           </TouchableOpacity>
 
           {/* Divider */}
