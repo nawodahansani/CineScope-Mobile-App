@@ -23,3 +23,14 @@ export const fetchMovieDetails = async (movieId: number) => {
     return null;
   }
 };
+
+  export const searchMovies = async (query: string, page = 1) => {
+  try {
+    const response = await fetch(`${BASE_URL}/search/movie?api_key=${TMDB_API_KEY}&language=en-US&query=${encodeURIComponent(query)}&page=${page}`);
+    const data = await response.json();
+    return data.results;
+  } catch (error) {
+    console.error("Error searching movies:", error);
+    return [];
+  }
+};

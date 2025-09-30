@@ -1,11 +1,11 @@
 import { View, ActivityIndicator } from 'react-native'
 import React, { useEffect } from 'react'
-import { useAuth } from '@/context/AuthContext';
+import { useAuth } from './../context/AuthContext';
 import { useRouter } from 'expo-router';
 
 const Index = () => {
   const router = useRouter();
-  const {user, loading} = useAuth()
+  const {user, loading} = useAuth();
   console.log("user data : " ,user);
 
    useEffect(() => {
