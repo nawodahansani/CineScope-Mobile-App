@@ -3,11 +3,11 @@ import { Tabs } from 'expo-router'
 import { Ionicons } from '@expo/vector-icons'; 
 
 
-const tabs: { label: string; name: string; icon: "home-outline" | "list-outline" | "person-outline" | "settings-outline" }[] = [
+const tabs: { label: string; name: string; icon: "home-outline" | "settings-outline" | "notifications-outline" }[] = [
     {label: "Home", name: "home", icon: "home-outline"},
-    {label: "Tasks", name: "tasks", icon: "list-outline"},
-    {label: "Profile", name: "profile", icon: "person-outline"},
+    {label: "Notification", name: "notification", icon: "notifications-outline"},
     {label: "Setting", name: "setting", icon: "settings-outline"}
+
 ]
 
 const DashboardLayout = () => {
