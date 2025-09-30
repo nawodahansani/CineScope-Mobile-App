@@ -78,7 +78,7 @@ const home = () => {
 
       const latestMovies = await fetchLatestMovies();
       const latestTV = await fetchLatestTVShows();
-      setLatest([...latestMovies.slice(0, 3), ...latestTV.slice(0, 3)]); // mix
+      setLatest([...latestMovies.slice(0,6), ...latestTV.slice(0, 6)]); // mix
 
       setPopularMovies(await fetchPopularMovies());
       setPopularTV(await fetchPopularTVShows());
