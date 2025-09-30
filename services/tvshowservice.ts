@@ -17,7 +17,7 @@ export const fetchPopularTVShows = async (page = 1) => {
 // Fetch TV show details by ID
 export const fetchTVShowDetails = async (tvId: number) => {
   try {
-    const response = await fetch(`${BASE_URL}/tv/${tvId}?api_key=${TMDB_API_KEY}&language=en-US`);
+    const response = await fetch(`${BASE_URL}/tv/${tvId}?api_key=${TMDB_API_KEY}&language=en-US&append_to_response=credits`);
     const data = await response.json();
     return data;
   } catch (error) {

@@ -17,7 +17,7 @@ export const fetchPopularMovies = async () => {
 // Fetch movie details by ID
 export const fetchMovieDetails = async (movieId: number) => {
   try {
-    const response = await fetch(`${BASE_URL}/movie/${movieId}?api_key=${TMDB_API_KEY}&language=en-US`);
+    const response = await fetch(`${BASE_URL}/movie/${movieId}?api_key=${TMDB_API_KEY}&language=en-US&append_to_response=credits`);
     const data = await response.json();
     return data;
   } catch (error) {
