@@ -47,22 +47,21 @@ import { View, Text, ImageBackground, Dimensions, ScrollView } from "react-nativ
 import {
   fetchPopularMovies,
   fetchLatestMovies,
-  fetchTrendingMovies,
   fetchMoviesByLanguage,
-  fetchAnimationMovies,
+  fetchMoviesByGenre,
+  fetchTrendingMovies
 } from "@/services/movieservice";
 import {
-  fetchPopularTV,
-  fetchLatestTV,
-  fetchTrendingTV,
+  fetchPopularTVShows,
+  fetchLatestTVShows,
   fetchTVByLanguage,
-  fetchAnimationTV,
+  fetchTVByGenre
 } from "@/services/tvshowservice";
 import CategoryCarousel from "@/components/CategoryCarousel";
 
 const { width, height } = Dimensions.get("window");
 
-const Home = () => {
+const home = () => {
   const [heroMovie, setHeroMovie] = useState<any>(null);
   const [latest, setLatest] = useState<any[]>([]);
   const [popularMovies, setPopularMovies] = useState<any[]>([]);
@@ -78,11 +77,11 @@ const Home = () => {
       setHeroMovie(trending[0]); // use first trending movie for hero
 
       const latestMovies = await fetchLatestMovies();
-      const latestTV = await fetchLatestTV();
+      const latestTV = await fetchLatestTVShows();
       setLatest([...latestMovies.slice(0, 3), ...latestTV.slice(0, 3)]); // mix
 
       setPopularMovies(await fetchPopularMovies());
-      setPopularTV(await fetchPopularTV());
+      setPopularTV(await fetchPopularTVShows());
 
       const englishMovies = await fetchMoviesByLanguage("en");
       const englishTV = await fetchTVByLanguage("en");
@@ -96,8 +95,8 @@ const Home = () => {
       const chineseTV = await fetchTVByLanguage("zh");
       setChinese([...chineseMovies, ...chineseTV]);
 
-      const animationMovies = await fetchAnimationMovies();
-      const animationTV = await fetchAnimationTV();
+      const animationMovies = await fetchMoviesByGenre(16); // genreId 16 = Animation
+      const animationTV = await fetchTVByGenre(16);
       setAnimation([...animationMovies, ...animationTV]);
     };
 
@@ -175,5 +174,5 @@ const Home = () => {
   );
 };
 
-export default Home;
+export default home;
 

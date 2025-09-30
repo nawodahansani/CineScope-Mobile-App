@@ -80,3 +80,17 @@ export const fetchMoviesByLanguage = async (langCode: string) => {
     return [];
   }
 };
+
+// Fetch trending movies (day or week)
+export const fetchTrendingMovies = async (timeWindow: "day" | "week" = "day") => {
+  try {
+    const response = await fetch(
+      `${BASE_URL}/trending/movie/${timeWindow}?api_key=${TMDB_API_KEY}`
+    );
+    const data = await response.json();
+    return data.results;
+  } catch (error) {
+    console.error("Error fetching trending movies:", error);
+    return [];
+  }
+};
