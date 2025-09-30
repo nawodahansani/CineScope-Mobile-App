@@ -1,12 +1,42 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, ScrollView, Pressable } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, ScrollView, Pressable, Alert, ActivityIndicator } from 'react-native';
 import { Eye, EyeOff, Mail, Lock, User } from 'lucide-react-native';
 import { useRouter } from 'expo-router';
+import { register } from '@/services/authservice';
 
 const Register = () => {
   const router = useRouter();
+
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  
+  const [email,setEmail] = useState<string>("")
+  const [password,setPassword] = useState<string>("")
+    const [confirmPassword, setConfirmPassword] = useState<string>('');
+
+  const[isLoading,setIsLoading] = useState(false)
+
+  const handleRegister = async () => {
+     if (!email || !password || !confirmPassword) {
+      return Alert.alert('Please fill all the fields');
+    }
+
+    if (password !== confirmPassword) {
+      return Alert.alert('Passwords do not match');
+    }
+
+    try{
+      setIsLoading(true)
+      await register(email,password)
+      Alert.alert("Registration successful")
+      router.back()
+    }catch(error){
+      console.log(error);
+      Alert.alert("Registration failed")
+    }finally{
+      setIsLoading(false)
+    }
+  }
 
   return (
     <ScrollView 
@@ -38,6 +68,8 @@ const Register = () => {
                 placeholderTextColor="#D1D1D1"
                 keyboardType="email-address"
                 autoCapitalize="none"
+                value={email}
+                onChangeText={setEmail}
               />
             </View>
           </View>
@@ -51,6 +83,8 @@ const Register = () => {
                 placeholder="Password"
                 placeholderTextColor="#D1D1D1"
                 secureTextEntry={!showPassword}
+                value={password}
+                onChangeText={setPassword}
               />
               <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
                 {showPassword ? (
@@ -71,6 +105,8 @@ const Register = () => {
                 placeholder="Confirm Password"
                 placeholderTextColor="#D1D1D1"
                 secureTextEntry={!showConfirmPassword}
+                value={confirmPassword}
+                onChangeText={setConfirmPassword}
               />
               <TouchableOpacity onPress={() => setShowConfirmPassword(!showConfirmPassword)}>
                 {showConfirmPassword ? (
@@ -83,8 +119,18 @@ const Register = () => {
           </View>
 
           {/* Signup Button */}
-          <TouchableOpacity className="bg-[#E94560] rounded-xl py-4 mb-6 items-center">
-            <Text className="text-white text-lg font-bold">Create Account</Text>
+          <TouchableOpacity 
+          className="bg-[#E94560] rounded-xl py-4 mb-6 items-center"
+          onPress={handleRegister}
+          disabled={isLoading}
+          >
+             {isLoading ? (
+              <ActivityIndicator color="#fff" />
+            ) : (
+              <Text className="text-white text-lg font-bold">
+                Create Account
+              </Text>
+            )}
           </TouchableOpacity>
 
           {/* Divider */}
