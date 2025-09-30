@@ -2,7 +2,6 @@ import React from 'react'
 import { Tabs } from 'expo-router'
 import { Ionicons } from '@expo/vector-icons'; 
 
-
 const tabs: { label: string; name: string; icon: "home-outline" | "settings-outline" | "notifications-outline" | "search-outline" }[] = [
     {label: "Home", name: "home", icon: "home-outline"},
     {label: "Search", name: "search", icon: "search-outline"},
