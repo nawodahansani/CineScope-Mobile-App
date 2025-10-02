@@ -1,50 +1,68 @@
-# Welcome to your Expo app 👋
+# 🎬 CineScope  
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+CineScope is a **React Native mobile application** that brings the world of movies and TV shows to your fingertips.  
+It uses the **TMDB API** to fetch trending, popular, and latest content with a clean and modern UI powered by **Expo Router**, **NativeWind**, and **React Native Reanimated**.  
 
-## Get started
+---
 
-1. Install dependencies
+## 🚀 Features  
 
-   ```bash
-   npm install
-   ```
+- 🔑 **Authentication Flow** (Login, Register, Logout)  
+- 🏠 **Dashboard** with trending & popular movies/TV shows  
+- 🎞️ **Movie & TV Show Details** with overview, rating, and poster  
+- ❤️ **Watchlist** (add/remove movies & TV shows)  
+- 🔎 **Search** movies & TV shows by title  
+- 🌐 **Category & Genre Filtering**  
+- 🎠 **Interactive Sliders & Animations** with `react-native-reanimated`    
 
-2. Start the app
+---
 
-   ```bash
-   npx expo start
-   ```
+## 🛠️ Tech Stack  
 
-In the output, you'll find options to open the app in a
+- **React Native** (Expo SDK 51)  
+- **Expo Router** – file-based routing  
+- **NativeWind** – TailwindCSS for styling  
+- **React Native Reanimated** – animations  
+- **Lucide React Native** – icons  
+- **AsyncStorage** – local storage for watchlist & session  
+- **TMDB API** – movie & TV data  
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+---
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+## 📸 Screenshots  
 
-## Get a fresh project
+| Home | See All | Watchlist |
+|------|--------------|-----------|
+| ![Home](assets/screenshots/home.jpg) | ![See All](assets/screenshots/seeAll.jpg) | ![Watchlist](assets/screenshots/watchlist.jpg) |
 
-When you're ready, run:
+## 🔑 API
 
-```bash
-npm run reset-project
-```
+This project uses the TMDB API.
+You need to create a free account and generate an API key to use the app.
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+## 🚀 Getting Started
 
-## Learn more
+1. Clone the repo
 
-To learn more about developing your project with Expo, look at the following resources:
+git clone https://github.com/nawodahansani/CineScope-Mobile-App.git
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+2. Install dependencies
 
-## Join the community
+npm install
+# or
+yarn install
 
-Join our community of developers creating universal apps.
+3. Configure Environment Variables
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+TMDB_API_KEY=your_tmdb_api_key_here
+BASE_URL=https://api.themoviedb.org/3
+
+4. Run the app
+
+npx expo start
+
+
+
+
+
+
