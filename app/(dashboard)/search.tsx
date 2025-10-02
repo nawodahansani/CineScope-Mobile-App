@@ -12,7 +12,6 @@ import {
 } from "react-native";
 import { Search, X } from "lucide-react-native";
 import { useRouter } from "expo-router";
-import Animated, { FadeIn, FadeInUp, Layout } from "react-native-reanimated";
 
 import { searchMovies } from "@/services/movieservice";
 import { searchTVShows } from "@/services/tvshowservice";
@@ -20,20 +19,37 @@ import { searchTVShows } from "@/services/tvshowservice";
 const { width } = Dimensions.get("window");
 
 const TAGS = [
-  "Action", "Comedy", "Drama", "Horror", "Romance",
-  "Animation", "Korean", "Chinese", "English",
+  "Action", "Adventure", "Comedy", "Drama", "Horror", "Romance",
+  "Animation", "Korean", "Chinese", "English", "Crime", "Fantasy",
+  "Mystery", "Sci-Fi", "Thriller", "Western", "Documentary"
 ];
 
-const search = () => {
+const SearchPage = () => {
   const router = useRouter();
 
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<any[]>([]);
+  const [defaultContent, setDefaultContent] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const [page, setPage] = useState(1);
   const [selectedTag, setSelectedTag] = useState<string | null>(null);
 
-  const search = async (searchQuery: string, pageNumber = 1) => {
+  useEffect(() => {
+    const loadDefaultContent = async () => {
+      setLoading(true);
+      try {
+        const movies = await searchMovies("popular", 1);
+        const tvShows = await searchTVShows("popular", 1);
+        setDefaultContent([...movies, ...tvShows]);
+      } catch (error) {
+        console.error(error);
+      }
+      setLoading(false);
+    };
+    loadDefaultContent();
+  }, []);
+
+  const search = async (searchQuery: string, pageNumber = 1, sortNewest = false) => {
     if (!searchQuery) return;
     setLoading(true);
     try {
@@ -44,6 +60,14 @@ const search = () => {
         pageNumber === 1
           ? [...movies, ...tvShows]
           : [...results, ...movies, ...tvShows];
+
+      if (sortNewest) {
+        combinedResults.sort((a, b) => {
+          const dateA = new Date(a.release_date || a.first_air_date || 0).getTime();
+          const dateB = new Date(b.release_date || b.first_air_date || 0).getTime();
+          return dateB - dateA;
+        });
+      }
 
       setResults(combinedResults);
     } catch (error) {
@@ -61,110 +85,106 @@ const search = () => {
     setSelectedTag(tag);
     setQuery(tag);
     setPage(1);
-    search(tag, 1);
+    search(tag, 1, true);
   };
 
   const loadMore = () => {
     const nextPage = page + 1;
     setPage(nextPage);
-    search(query, nextPage);
+    search(query, nextPage, !!selectedTag);
   };
 
-  const renderTag = (tag: string, index: number) => (
-    <Animated.View
-      entering={FadeIn.delay(index * 50)}
+  const renderTag = (tag: string) => (
+    <TouchableOpacity
       key={tag}
+      className={`px-4 py-2 rounded-full ${
+        selectedTag === tag ? "bg-[#E94560]" : "bg-[#0F3460]"
+      } mr-2 mb-2`}
+      onPress={() => handleTagSelect(tag)}
     >
-      <TouchableOpacity
-        className={`px-4 py-2 rounded-full border ${selectedTag === tag ? "bg-[#E94560]" : "bg-[#0F3460]"} mr-2 mb-2`}
-        onPress={() => handleTagSelect(tag)}
-      >
-        <Text className="text-white">{tag}</Text>
-      </TouchableOpacity>
-    </Animated.View>
+      <Text className="text-white">{tag}</Text>
+    </TouchableOpacity>
   );
 
-  const renderItem = ({ item, index }: any) => (
-    <Animated.View
-      layout={Layout.springify()}
-      entering={FadeInUp.delay(index * 50)}
+  const renderItem = ({ item }: any) => (
+    <TouchableOpacity
+      className="m-2"
+      activeOpacity={0.8}
+      onPress={() =>
+        item.title
+          ? router.push(`/movie/${item.id}`)
+          : router.push(`/tv/${item.id}`)
+      }
     >
-      <TouchableOpacity
-        className="m-2"
-        activeOpacity={0.8}
-        onPress={() =>
-          item.title
-            ? router.push(`/movie/${item.id}`)
-            : router.push(`/tv/${item.id}`)
-        }
-      >
-        <Image
-          source={{
-            uri: `https://image.tmdb.org/t/p/w500${item.poster_path || item.backdrop_path}`,
-          }}
-          style={{
-            width: width * 0.45,
-            height: 230,
-            borderRadius: 10,
-          }}
-        />
-        <Text className="text-white mt-2 w-36 font-semibold">
-          {item.title || item.name}
-        </Text>
-      </TouchableOpacity>
-    </Animated.View>
+      <Image
+        source={{
+          uri: `https://image.tmdb.org/t/p/w500${item.poster_path || item.backdrop_path}`,
+        }}
+        style={{
+          width: width * 0.45,
+          height: 230,
+          borderRadius: 10,
+        }}
+      />
+      <Text className="text-white mt-2 w-36 font-semibold">
+        {item.title || item.name}
+      </Text>
+    </TouchableOpacity>
   );
 
   return (
-    <View className="flex-1 bg-black p-4">
-      {/* Search Bar */}
-      <View className="flex-row items-center bg-[#0F3460] rounded-full px-4 py-2 mb-4">
-        <Search color="#D1D1D1" size={20} />
-        <TextInput
-          className="flex-1 text-white ml-2"
-          placeholder="Search movies & TV shows"
-          placeholderTextColor="#D1D1D1"
-          value={query}
-          onChangeText={setQuery}
-          onSubmitEditing={handleSearch}
-        />
-        {query ? (
-          <TouchableOpacity
-            onPress={() => {
-              setQuery("");
-              setResults([]);
-            }}
-          >
-            <X color="#D1D1D1" size={20} />
-          </TouchableOpacity>
-        ) : null}
-      </View>
+    <View className="flex-1 bg-[#1A1A2E] p-4">
+      <FlatList
+        data={results.length > 0 ? results : defaultContent}
+        keyExtractor={(item) => item.id.toString()}
+        renderItem={renderItem}
+        numColumns={2}
+        onEndReached={loadMore}
+        onEndReachedThreshold={0.5}
+        ListHeaderComponent={
+          <>
+            {/* Search Bar */}
+            <View className="flex-row items-center bg-[#0F3460] rounded-full px-4 py-2 mb-4">
+              <Search color="#D1D1D1" size={20} />
+              <TextInput
+                className="flex-1 text-white ml-2"
+                placeholder="Search movies & TV shows"
+                placeholderTextColor="#D1D1D1"
+                value={query}
+                onChangeText={setQuery}
+                onSubmitEditing={handleSearch}
+              />
+              {query ? (
+                <TouchableOpacity
+                  onPress={() => {
+                    setQuery("");
+                    setResults([]);
+                    setSelectedTag(null);
+                  }}
+                >
+                  <X color="#D1D1D1" size={20} />
+                </TouchableOpacity>
+              ) : null}
+            </View>
 
-      {/* Animated Tags */}
-      <ScrollView horizontal showsHorizontalScrollIndicator={false} className="mb-4">
-        <View className="flex-row flex-wrap">
-          {TAGS.map(renderTag)}
-        </View>
-      </ScrollView>
-
-      {/* Results */}
-      {loading && page === 1 ? (
-        <ActivityIndicator size="large" color="#E94560" />
-      ) : (
-        <FlatList
-          data={results}
-          keyExtractor={(item) => item.id.toString()}
-          renderItem={renderItem}
-          numColumns={2}
-          onEndReached={loadMore}
-          onEndReachedThreshold={0.5}
-          ListFooterComponent={
-            loading ? <ActivityIndicator size="large" color="#E94560" /> : null
-          }
-        />
-      )}
+            {/* Tags */}
+            <ScrollView
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              className="mb-4"
+            >
+              <View className="flex-row flex-wrap px-2">
+                {TAGS.map(renderTag)}
+              </View>
+            </ScrollView>
+          </>
+        }
+        ListFooterComponent={
+          loading ? <ActivityIndicator size="large" color="#E94560" /> : null
+        }
+      />
     </View>
   );
 };
 
-export default search;
+export default SearchPage;

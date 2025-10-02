@@ -25,7 +25,7 @@ const FooterNav = () => {
           <Pressable
             key={tab.path}
             style={[styles.tabButton, isActive && styles.activeTab]}
-            onPress={() => router.push(tab.path)}
+            onPress={() => router.push(tab.path as any)}
           >
             <Ionicons
               name={tab.icon as any}

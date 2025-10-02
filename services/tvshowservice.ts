@@ -1,6 +1,8 @@
-import { TMDB_API_KEY } from "@env";
+
 
 const BASE_URL = "https://api.themoviedb.org/3";
+const TMDB_API_KEY = "10e88da95091b20b90f5bb59cfa99376";
+
 
 // Fetch popular TV shows
 export const fetchPopularTVShows = async (page = 1) => {
@@ -70,8 +72,9 @@ export const fetchTVByGenre = async (genreId: number) => {
 // Get TV shows by original language - korean and chinese
 export const fetchTVByLanguage = async (langCode: string) => {
   try {
+    const today = new Date().toISOString().split("T")[0];
     const response = await fetch(
-      `${BASE_URL}/discover/tv?api_key=${TMDB_API_KEY}&with_original_language=${langCode}&sort_by=popularity.desc`
+      `${BASE_URL}/discover/tv?api_key=${TMDB_API_KEY}&with_original_language=${langCode}&sort_by=release_date.desc&first_air_date.lte=${today}`
     );
     const data = await response.json();
     return data.results;

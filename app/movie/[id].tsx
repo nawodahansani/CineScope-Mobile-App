@@ -1,46 +1,20 @@
-// import React, { useEffect, useState } from "react";
-// import { View, Text, Image, ScrollView } from "react-native";
-// import { useLocalSearchParams } from "expo-router";
-// import { fetchMovieDetails } from "@/services/movieservice";
-
-// const MovieDetail = () => {
-//   const { id } = useLocalSearchParams();
-//   const [movie, setMovie] = useState<any>(null);
-
-//   useEffect(() => {
-//     const loadMovie = async () => {
-//       const data = await fetchMovieDetails(Number(id));
-//       setMovie(data);
-//     };
-//     loadMovie();
-//   }, [id]);
-
-//   if (!movie) {
-//     return <Text className="text-white">Loading...</Text>;
-//   }
-
-//   return (
-//     <ScrollView className="flex-1 bg-[#1A1A2E] p-4">
-//       <Image
-//         source={{ uri: `https://image.tmdb.org/t/p/w500${movie.poster_path}` }}
-//         style={{ width: "100%", height: 400, borderRadius: 10 }}
-//       />
-//       <Text className="text-white text-3xl font-bold mt-4">{movie.title}</Text>
-//       <Text className="text-gray-300 mt-2">{movie.overview}</Text>
-//       <Text className="text-[#E94560] mt-4">⭐ {movie.vote_average}</Text>
-//       <Text className="text-gray-400 mt-2">Release Date: {movie.release_date}</Text>
-//     </ScrollView>
-//   );
-// };
-
-// export default MovieDetail;
-
 import React, { useEffect, useState } from "react";
-import { View, Text, Image, ScrollView, TouchableOpacity, FlatList, Dimensions } from "react-native";
+import {
+  View,
+  Text,
+  Image,
+  ScrollView,
+  TouchableOpacity,
+  FlatList,
+} from "react-native";
 import { useLocalSearchParams } from "expo-router";
 import { fetchMovieDetails } from "@/services/movieservice";
-
-const { width } = Dimensions.get("window");
+import {
+  isInWatchlist,
+  addToWatchlist,
+  removeFromWatchlist,
+  WatchlistItem,
+} from "@/helpers/watchlist";
 
 const MovieDetail = () => {
   const { id } = useLocalSearchParams();
@@ -51,21 +25,40 @@ const MovieDetail = () => {
 
   useEffect(() => {
     const loadMovie = async () => {
-      const data = await fetchMovieDetails(Number(id));
-      setMovie(data);
+      try {
+        const data = await fetchMovieDetails(Number(id));
+        setMovie(data);
 
-      // Cast & Crew
-      if (data && data.credits) {
-        setCast(data.credits.cast || []);
-        setCrew(data.credits.crew || []);
+        if (data?.credits) {
+          setCast(data.credits.cast || []);
+          setCrew(data.credits.crew || []);
+        }
+
+        const exists = await isInWatchlist(Number(id), "movie");
+        setWatchlist(exists);
+      } catch (error) {
+        console.error("Error loading movie details:", error);
       }
     };
     loadMovie();
   }, [id]);
 
-  const toggleWatchlist = () => {
+  const toggleWatchlist = async () => {
+    if (!movie) return;
+    const item: WatchlistItem = {
+      id: movie.id,
+      media_type: "movie",
+      title: movie.title || "Untitled",
+      poster_path: movie.poster_path || null,
+      backdrop_path: movie.backdrop_path || null,
+    };
+
+    if (watchlist) {
+      await removeFromWatchlist(movie.id, "movie");
+    } else {
+      await addToWatchlist(item);
+    }
     setWatchlist(!watchlist);
-    // Here you can also store watchlist in AsyncStorage or API
   };
 
   if (!movie) {
@@ -76,35 +69,58 @@ const MovieDetail = () => {
     <ScrollView className="flex-1 bg-[#1A1A2E]" contentContainerStyle={{ paddingBottom: 20 }}>
       {/* Poster */}
       <Image
-        source={{ uri: `https://image.tmdb.org/t/p/w500${movie.poster_path}` }}
-        style={{ width: "100%", height: 400 }}
+        source={{
+          uri: movie.poster_path
+            ? `https://image.tmdb.org/t/p/w500${movie.poster_path}`
+            : "https://via.placeholder.com/500x750?text=No+Image",
+        }}
+        style={{ width: "100%", height: 600 }}
+        resizeMode="contain"
       />
 
       {/* Title & Info */}
       <View className="p-4">
-        <Text className="text-white text-3xl font-bold">{movie.title}</Text>
-
-        <View className="flex-row items-center mt-2">
-          <Text className="text-yellow-400 font-bold">⭐ {movie.vote_average}</Text>
-          <Text className="text-gray-400 ml-4">{movie.release_date}</Text>
-          <Text className="text-gray-400 ml-4">{movie.runtime} min</Text>
-        </View>
-
-        {/* Tags / Genres */}
-        <View className="flex-row flex-wrap mt-2">
-          {movie.genres?.map((genre: any) => (
-            <Text key={genre.id} className="text-gray-400 mr-3 bg-[#0F3460] px-2 py-1 rounded">
-              {genre.name}
-            </Text>
-          ))}
-        </View>
-
-        {/* Original Language */}
-        <Text className="text-gray-400 mt-2">
-          Original Language: {movie.original_language.toUpperCase()}
+        <Text className="text-white text-3xl font-bold">
+          {movie.title || "Untitled Movie"}
         </Text>
 
-        {/* Add to Watchlist */}
+        <View className="flex-row items-center mt-2">
+          <Text className="text-yellow-400 font-bold">
+            ⭐ {movie.vote_average ? movie.vote_average.toFixed(1) : "N/A"}
+          </Text>
+          <Text className="text-gray-400 ml-4">
+            {movie.release_date || "Unknown"}
+          </Text>
+          <Text className="text-gray-400 ml-4">
+            {movie.runtime ? `${movie.runtime} min` : "N/A"}
+          </Text>
+        </View>
+
+        {/* Genres */}
+        <View className="flex-row flex-wrap mt-2">
+          {movie.genres?.length > 0 ? (
+            movie.genres.map((genre: any) => (
+              <Text
+                key={`genre-${genre.id}`}
+                className="text-gray-400 mr-3 bg-[#0F3460] px-2 py-1 rounded"
+              >
+                {genre.name}
+              </Text>
+            ))
+          ) : (
+            <Text className="text-gray-400">No genres available</Text>
+          )}
+        </View>
+
+        {/* Language */}
+        <Text className="text-gray-400 mt-2">
+          Original Language:{" "}
+          {movie.original_language
+            ? movie.original_language.toUpperCase()
+            : "Unknown"}
+        </Text>
+
+        {/* Watchlist Button */}
         <TouchableOpacity
           onPress={toggleWatchlist}
           className="bg-[#E94560] rounded-xl py-3 px-4 mt-4 w-40 items-center"
@@ -116,60 +132,80 @@ const MovieDetail = () => {
 
         {/* Overview */}
         <Text className="text-white text-lg font-semibold mt-6">Overview</Text>
-        <Text className="text-gray-300 mt-2">{movie.overview}</Text>
+        <Text className="text-gray-300 mt-2">
+          {movie.overview || "No overview available."}
+        </Text>
 
-        {/* Staff / Crew */}
+        {/* Crew */}
         {crew.length > 0 && (
           <>
             <Text className="text-white text-lg font-semibold mt-6">Staff</Text>
             <FlatList
-              data={crew.slice(0, 5)} // Top crew members
+              data={crew.slice(0, 5)}
               horizontal
               showsHorizontalScrollIndicator={false}
-              keyExtractor={(item) => item.id.toString()}
+              keyExtractor={(item, index) =>
+                `${item.id || index}-${item.job || "crew"}`
+              }
               renderItem={({ item }) => (
                 <View className="mr-4 mt-2 items-center">
                   {item.profile_path ? (
                     <Image
-                      source={{ uri: `https://image.tmdb.org/t/p/w200${item.profile_path}` }}
+                      source={{
+                        uri: `https://image.tmdb.org/t/p/w200${item.profile_path}`,
+                      }}
                       style={{ width: 80, height: 80, borderRadius: 40 }}
                     />
                   ) : (
                     <View className="bg-gray-600 w-20 h-20 rounded-full flex items-center justify-center">
-                      <Text className="text-white">N/A</Text>
+                      <Text className="text-white text-xs">N/A</Text>
                     </View>
                   )}
-                  <Text className="text-white text-sm mt-2 text-center">{item.name}</Text>
-                  <Text className="text-gray-400 text-xs text-center">{item.job}</Text>
+                  <Text className="text-white text-sm mt-2 text-center">
+                    {item.name || "Unknown"}
+                  </Text>
+                  <Text className="text-gray-400 text-xs text-center">
+                    {item.job || ""}
+                  </Text>
                 </View>
               )}
             />
           </>
         )}
 
-        {/* Top Billed Cast */}
+        {/* Cast */}
         {cast.length > 0 && (
           <>
-            <Text className="text-white text-lg font-semibold mt-6">Top Billed Cast</Text>
+            <Text className="text-white text-lg font-semibold mt-6">
+              Top Billed Cast
+            </Text>
             <FlatList
-              data={cast.slice(0, 10)} // Top 10 cast
+              data={cast.slice(0, 10)}
               horizontal
               showsHorizontalScrollIndicator={false}
-              keyExtractor={(item) => item.cast_id.toString()}
+              keyExtractor={(item, index) =>
+                `${item.cast_id || item.credit_id || index}-cast`
+              }
               renderItem={({ item }) => (
                 <View className="mr-4 mt-2 items-center">
                   {item.profile_path ? (
                     <Image
-                      source={{ uri: `https://image.tmdb.org/t/p/w200${item.profile_path}` }}
+                      source={{
+                        uri: `https://image.tmdb.org/t/p/w200${item.profile_path}`,
+                      }}
                       style={{ width: 80, height: 80, borderRadius: 40 }}
                     />
                   ) : (
                     <View className="bg-gray-600 w-20 h-20 rounded-full flex items-center justify-center">
-                      <Text className="text-white">N/A</Text>
+                      <Text className="text-white text-xs">N/A</Text>
                     </View>
                   )}
-                  <Text className="text-white text-sm mt-2 text-center">{item.name}</Text>
-                  <Text className="text-gray-400 text-xs text-center">{item.character}</Text>
+                  <Text className="text-white text-sm mt-2 text-center">
+                    {item.name || "Unknown"}
+                  </Text>
+                  <Text className="text-gray-400 text-xs text-center">
+                    {item.character || ""}
+                  </Text>
                 </View>
               )}
             />
@@ -181,4 +217,3 @@ const MovieDetail = () => {
 };
 
 export default MovieDetail;
-
