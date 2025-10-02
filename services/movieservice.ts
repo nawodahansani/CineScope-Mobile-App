@@ -89,7 +89,7 @@ export const fetchTrendingMovies = async (timeWindow: "day" | "week" = "day") =>
       `${BASE_URL}/trending/movie/${timeWindow}?api_key=${TMDB_API_KEY}`
     );
     const data = await response.json();
-    return data.results;
+    return data.results.slice(0, 20);
   } catch (error) {
     console.error("Error fetching trending movies:", error);
     return [];
