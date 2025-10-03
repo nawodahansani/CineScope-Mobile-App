@@ -44,6 +44,14 @@ Watch CineScope in action!
 
 ---
 
+## 📱 Download APK  
+
+You can try out CineScope on your Android device by downloading the APK:  
+
+👉 [Download CineScope APK](https://drive.google.com/file/d/1m-iub1FfM4ggpQoIFB_5pKO1mlk_mHCf/view?usp=drive_link)
+
+---
+
 ## 🔑 API
 
 This project uses the TMDB API.
