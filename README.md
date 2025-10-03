@@ -39,11 +39,8 @@ It uses the **TMDB API** to fetch trending, popular, and latest content with a c
 
 ## 🎥 Demo Video  
 
-Watch CineScope in action!  
-[![CineScope Demo Video](https://img.youtube.com/vi/f535e5oWcvA/0.jpg)](https://youtu.be/f535e5oWcvA)  
-
-Click the image above to watch the demo on YouTube.  
-Or click here → [Demo Video Link](https://youtu.be/f535e5oWcvA)
+Watch CineScope in action!   
+[Demo Video Link](https://youtu.be/f535e5oWcvA)
 
 ---
 
